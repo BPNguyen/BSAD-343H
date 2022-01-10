@@ -1,0 +1,241 @@
+---
+title: "Qualitative & Quantitative Analytics (lab05)"
+author: "Brian Nguyen"
+date: "3/2/2021"
+output:
+  html_notebook: default
+  html_document: default
+subtitle: BSAD 343H, Business Analytics, Spring 2021
+---
+
+### About
+
+Qualitative Descriptive Analytics aims to gather an in-depth understanding of the underlying reasons and motivations for an event or observation. It is typically represented with visuals or charts, and is more exploratory in nature. 
+
+Quantitative Descriptive Analytics focuses on investigating a phenomenon via statistical, mathematical, and computationaly techniques. It aims to quantify an event with metrics and numbers, establishing relationships, possible cause and effect. It is more explanatory in nature.
+
+
+In this lab, we will explore both analytics using the data set provided. 
+
+### Note
+
+Read carefully the instructions on Sakai. For clarity, questions are highlighted in red color and numbered according to their particular placement in the task section.  Quite often you may need to add your own code chunk.
+
+Execute all code chunks, save your work, preview, and submit your final $\it lab05.nb.html$ file in Sakai.
+
+--------------
+
+### Task 1: Quantitative Analysis (total 6pts)
+
+Begin by reading in the data from the 'marketing.csv' file, and viewing it to make sure it is read in correctly. 
+
+```{r}
+# Read data file
+mydata = read.csv(file="marketing.csv")
+# Show header lines
+head(mydata)
+```
+
+Now let's calculate the Range, Min, Max, Mean, STDEV, and Variance for each variable. Below is an example of how to compute the items for the variable 'sales'. 
+
+```{r}
+# Extract the column field sales from data object mydata
+# Store resutls in variable name sales
+
+sales = mydata$sales
+#Max Sales
+max = max(sales)
+max
+
+#Min Sales
+min = min(sales)
+min
+
+#Range
+max-min
+
+#Mean
+mean(sales)
+
+#Standard Deviation
+sd(sales)
+
+#Variance
+var(sales)
+```
+
+<span style="color:red">
+##### 1A) Insert a new code chunk to repeat the above statistics for the column field radio instead (2pts)
+</span>
+
+```{r}
+# Extract and set the column field radio from data object mydata to 'radio'
+radio = mydata$radio
+
+# Max of 'radio'
+max = max(radio)
+max
+
+# Min of 'radio'
+min = min(radio)
+min
+
+# Range of 'radio'
+max - min
+
+# Mean of 'radio'
+mean(radio)
+
+# Standard Deviation of 'radio'
+sd(radio)
+
+# Variance of 'radio'
+var(radio)
+```
+
+An easy way to calculate many of these statistics is with the summary() function. Below is an example.
+
+```{r}
+summary(sales)
+```
+
+<span style="color:red">
+##### 1B) Insert a new code chunk to calculate the interquartile range for sales, and determine if there are any outliers. Refer to lab04 (4pts) 
+</span>
+
+```{r}
+# Calculate IQR of 'sales'
+quantile(sales) 
+lowerq = quantile(sales)[2]
+upperq = quantile(sales)[4]
+iqr = upperq - lowerq
+iqr
+
+# Calculate upper threshold of 'sales'
+upperthreshold = (iqr * 1.5) + upperq 
+upperthreshold
+
+# Calculate lower threshold of 'sales'
+lowerthreshold = lowerq - (iqr * 1.5)
+lowerthreshold
+
+# Create box plot of 'sales'
+boxplot(sales)
+```
+
+<span style="color:blue">
+There are no outliers present because the maximum and minimum values of `sales` are both within the upper and lower thresholds.
+</span>
+
+----------
+
+### Task 2: Qualitative Analysis (total 12pts)
+
+First, we will produce a basic plot of the 'sales' variable.For this we call the plot function and within the plot function we refer the variable we want to plot. 
+
+```{r}
+plot(sales)
+```
+
+We can customize the plot by connecting the dots, and adding labels to the x- and y- axis.
+
+```{r}
+# Connect the dots
+# Add xlab labels the x axis, ylab labels the y axis
+plot(sales, type="b", xlab = "Case Number", ylab = "Sales in $1,000") 
+```
+
+There are further ways to customize plots, such as changing the colors of the lines, adding a heading, or even making them interactive. 
+
+Now, lets plot the sales graph, alongside radio, paper, and tv which you will code. Make sure to run the code in the same code chunk so they are on the same layout.
+
+```{r}
+# Layout allows us to see all 4 graphs on one screen in a 2x2
+layout(matrix(1:4,2,2))
+
+# Example of how to plot the sales variable
+plot(sales, type="b", xlab = "Case Number", ylab = "Sales in $1,000") 
+
+# Add the three other plots here
+# Plot graph of 'radio'
+plot(radio, type="b", xlab = "Case Number", ylab = "Radio Sales in Units") 
+
+# Plot graph of 'paper'
+paper = mydata$paper
+plot(paper, type="b", xlab = "Case Number", ylab = "Paper Sales in Units") 
+
+# Plot graph of 'tv'
+tv = mydata$tv
+plot(tv, type="b", xlab = "Case Number", ylab = "TV Sales in Units") 
+```
+
+<span style="color:red">
+##### 2A) Insert in the above chunk the code for the three other plots for Radio, Paper, and TV.  Label the axes properly (4pts)
+</span>
+
+<span style="color:blue">
+Please see above code chunk.
+</span>
+
+
+When looking at these plots it is hard to see a particular trend. One way to observe any possible trend in the sales data, would be to re-order the data from low to high or vice versa. The 20 months case studies are in no particular chronological time sequence. The 20 case numbers are simple sequential numbers used as an index, that can be re-ordered. As each case is re-ordered the corresponding column values are also re-organised to maintain the relationship integrity within each row.
+
+```{r}
+# Re-order sales from low to high, and save re-ordered data in a new set. 
+# As sales data is re-ordered, corresponding other column fields follow.
+newdata = mydata[order(sales),]
+# Show header lines
+head(newdata)
+# Redefine the new variables 
+newsales = newdata$sales
+newradio = newdata$radio
+newtv = newdata$tv
+newpaper = newdata$paper
+```
+
+<span style="color:red">
+##### 2B) Insert a new code chunk to repeat the earlier 2x2 graphs layout exercise, using instead the above defined four new variables for sales, radio, tv, and paper (4pts) 
+
+```{r}
+# Create 2x2 layout for 4 graphs
+layout(matrix(1:4,2,2))
+
+# Plot graph of 'newsales'
+plot(newsales, type="b", xlab = "Case Number", ylab = "Sales in $") 
+
+# Plot graph of 'newradio'
+plot(newradio, type="b", xlab = "Case Number", ylab = "Radio Sales in Units") 
+
+# Plot graph of 'newpaper'
+plot(newpaper, type="b", xlab = "Case Number", ylab = "Paper Sales in Units") 
+
+# Plot graph of 'newtv'
+plot(newtv, type="b", xlab = "Case Number", ylab = "TV Sales in Units") 
+```
+
+<span style="color:red">
+##### 2C) Write a small paragraph (2-5 lines) to explain in clear words what the new plots reveal in terms of trending relationships (4pts)
+</span>
+
+<span style="color:blue">
+Based on the new plotted graphs, it is evident that there are strong, positive trends for both `sales` and `radio` as `case_number` increases. This trend remains positive, although not as consistently strong as the aforementioned trends, for `paper` as `case_number` increases, as there are periodic plateaus in the trend. As for `tv` as `case_number` increases, there is an irregular, negative trend, as there is not an evident trend revealed.
+</span>
+
+----------
+
+### Task 3: Standarized Z-Value (total 2pts)
+
+You are given a sales value of $25000. 
+
+<span style="color:red">
+##### 3A) Insert a new code chunk to calculate the z-value. Based on your result, would you rate a `$25000` in sales as poor, average, good, or very good performance? Explain your logic (2pts)
+</span>
+
+```{r}
+zscore = (25000 - mean(sales)) / sd(sales)
+zscore
+```
+
+<span style="color:blue">
+I would consider `$25000` in sales as very good performance because its z-score of `3.164935` is greater than 3 standard deviations from the mean. Additionally, it is greater than both the previously calculated `sales` upper threshold of `$24422.75` and maximum of `$20450`.
+</span>

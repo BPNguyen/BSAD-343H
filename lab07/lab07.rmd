@@ -1,0 +1,336 @@
+---
+title: "Linear Regression (lab07)"
+author: "Brian Nguyen"
+date: "3/23/2021"
+output:
+  html_notebook: default
+  html_document: default
+subtitle: BSAD 343H, Business Analytics, Spring 2021
+---
+
+### About
+
+In a given year, if it rains more, we might see an increase in crop production. This is because more water may lead to more plants. This is a direct relationship; the amount of produce may be predicted by the amount of rainfall in a certain year. This example represents a simple linear regression, an important concept that allows us to model (predict) the output value of a certain variable based off the input of one or many variables. 
+
+This lab explores the concepts of simple linear regression, and multiple linear regression. Emphasis is placed on distinguishing between a good fitting model and a good predicting model. Before answering any question, take time to study carefully the shared code examples, and to review course material.
+
+### Note
+
+Read carefully the instructions on Sakai. For clarity, questions are highlighted in red color and numbered according to their particular placement in the task section. Quite often you may need to add your own code chunk.
+
+Execute all code chunks, save your work, preview, and submit your final $\it lab07.nb.html$ file in Sakai.
+
+--------------
+
+### Task 1: Simple Linear Regression (total 6pts)
+
+First, read in the marketing data that was used in the previous lab. Make sure the file is read in correctly by checking the variables in the environment pane of Rstudio and also displaying the few header lines of the file.
+
+```{r}
+#Read the input file
+mydata = read.csv(file="marketing.csv")
+head(mydata)
+```
+
+Next, apply the `cor()` function to the entire data set. This is a quick way to compare the correlations between all variables.
+
+
+```{r}
+#Correlation matrix of all variable columns in the data
+corr = cor(mydata)
+corr
+
+# Correlation matrix of columns 2,4, and 6
+corr = cor( mydata[ c(2,4,6) ] )
+corr
+
+#Correlation matrix of all columns except the first column. This is convenient since case_number is only an index and should be excluded from the calculations.
+corr = cor( mydata[ 2:6 ] )
+corr
+```
+
+The above matrix has the properties of being a square (# columns = # rows), symmetric matrix (lower diagonal = upper diagonal), and all diagonal values are equal to one.
+
+<span style="color:red">
+##### 1A) Explain why the value of "1.0" along the diagonal (1pt)
+</span>
+
+<span style="color:blue">
+A column is always perfectly positively correlated with itself.
+</span>
+
+<span style="color:red">
+##### 1B) Select two particular entries from the matrix to demonstrate how the correlation value is symmetric with respect to the diagonal (1pt)
+</span>
+
+```{r}
+# Correlation matric of columns 2 and 4
+corr = cor(mydata[c(2, 4)])
+corr
+```
+
+
+<span style="color:blue">
+The (`paper`, `sales`) and (`sales`, `paper`) entries both equal `-0.2830683` and are symmetric over the diagonal.
+</span>
+
+Next we will create a visual diagram of the correlation matrix called a corrgram where the correlations strength are represented by colors intensity.  To do this we need first to install the package $corrgram$ in R-Studio similar to what we did for lab06.  The command is slightly modified here.
+
+```{r, echo=FALSE}
+# To turn-off the output display we set echo=FALSE
+# Will load the package only if not already installed 
+# Dependencies = TRUE makes sure that dependencies are install
+
+if(!require("corrgram",quietly = TRUE))
+  install.packages("corrgram",dependencies = TRUE, repos = "https://cloud.r-project.org")
+
+library("corrgram")
+```
+
+```{r}
+# Correlation matrix of all columns except the first column. This is convenient since case_number is only an index and should be excluded from the calculations.
+corr = cor( mydata[ 2:6 ] )
+
+# Generates a corrgram of last computed correlation matrix
+corrgram(corr)
+```
+
+From the matrix, its clear that Sales, Radio and TV have the strongest correlations. Let's create now few scatterplots to visualize the data and trending lines. First we need to extract the columns from the data file.
+
+```{r}
+#Extract all variables
+pos  = mydata$pos
+paper = mydata$paper
+tv = mydata$tv
+sales = mydata$sales
+radio = mydata$radio
+```
+
+```{r}
+#Plot of Radio and Sales using plot command from Worksheet 4
+scatter.smooth(radio,sales)
+```
+
+From this plot, it seems the points are scattered in an almost linear way. So, we will try to fit a simple linear regression model to the graph. 
+
+The `lm()` linear modeling function is a very useful one. The function is set up as `lm(y ~ x)` where the independent variable x is used to predict values of the y dependent variable.  
+
+In the simple linear regression model below, we are using radio ads to predict sales. We print out a summary to view some quantitative facts about the linear model. 
+
+```{r}
+#Simple Linear Regression - the R function lm()
+reg <- lm(sales ~ radio)
+
+# Display summary of simple linear regression model reg
+summary(reg)
+```
+
+As indicated by the summary report the intercept value is -9741.92 and the slope for radio is 347.69.  We can therefore write the mathe for the linematical representation for the linear regression model predicting Sales based on Radio as `Sales_predicted = -9741.92 + 347.69 * Xradio`. Given this equation  we can predict the value of sales for any given value of radio like for example 75 (investing $75,000 in radio ads). Always watch for units!
+
+```{r}
+# Linear model  ( Y = b + mx ) 
+
+sales_predicted = -9741.92 + 347.69 * (75)
+sales_predicted
+
+# A more elegant way to write the equation is to refer to the coefficients of the equation instead of typing the actual values out.
+# This is demonstrated below.
+
+sales_predicted = coef(reg)[1] + coef(reg)[2] * 75
+coef(reg)[1] # intercept
+coef(reg)[2] # slope
+sales_predicted
+
+```
+
+
+A high R-Squared value indicates that the model is a good fit, but not perfect. For the case of Sales versus Radio we will overlay the trend line representing the regression equation over the original plot. This will show how far the predicted values are from the actual value. The difference between the actual sales (circles) and the predicted sales (solid line) is captured in the residual error calculations as reported earlier by the summary function. For the purpose of this exercise and the class we will focus mainly on Multiple R-squared and Adjusted R-squared
+
+```{r}
+#Plot Radio and Sales 
+plot(radio,sales)
+#Add a trend line plot using the reg linear model 
+abline(reg, col="blue",lwd=2) 
+```
+
+Note that the trend line shown here is the one corresponding to the regression equation.  It is different from the smooth curved line used earlier in the scatter plot.
+
+<span style="color:red">
+##### 1C) Repeat the above calculations to fit and plot the linear regression model for Sales versus TV (2pts)
+</span>
+
+```{r}
+# Plot of Sales vs. TV
+scatter.smooth(tv, sales)
+
+# Apply simple regression model 'reg'
+reg <- lm(sales ~ tv)
+
+# Display summary of 'reg'
+summary(reg)
+
+# Plot Sales vs. TV
+plot(tv, sales,
+     main = 'Sales vs. TV Commercials', 
+     xlab = 'TV Commercials (in $1000s)', 
+     ylab = 'Sales (in $1000)')
+
+# Add a trend line plot using the reg linear model 
+abline(reg, 
+       col="blue", 
+       lwd=2) 
+```
+
+<span style="color:red">
+##### 1D) Write the mathematical representation for the linear regression model. Identify the values for the intercept and the slope (2pts)
+</span>
+
+<span style="color:blue">
+`y = 221.10x - 42229.21`
+
+<span style="color:blue">
+Intercept = `-42229.21`<br>
+Slope = `221.10`
+</span>
+
+----------
+
+### Task 2: Multiple Linear Regression (total 14pts)
+
+Many times there are more than one factor or variable that affect the prediction of an outcome. While increased rainfall is a good predictor of increased crop supply, decreased herbivores can also result in an increase of crops. This idea is a loose metaphor for multiple linear regression. 
+
+In R, multiple linear regression takes the form of `lm(y ~ x0 + x1 + x2 + ... )`, where y is the value that is being predicted, or the dependent variable, and the x variables are the predictors or the independent variables. 
+
+Lets create a multiple linear regression predicting sales using the two independent variables radio and tv. 
+
+```{r}
+#Multiple Linear Regression Model
+mlr1 <-lm(sales ~ radio + tv)
+
+#Summary of Multiple Linear Regression Model
+summary(mlr1)
+```
+
+Note the values of 0.9577 for R-squared and 0.9527 for the Adjusted R-squared.  The predicted sales can again be calculated given the coefficients of the regression model.  The example below calculates the predicted sales for TV = 270 and Radio = 75.
+
+```{r}
+# sales_predicted = radio + tv
+sales_predicted = coef(mlr1)[1] + coef(mlr1)[2]*(75) + coef(mlr1)[3]*(270)
+sales_predicted
+
+```
+
+<span style="color:red">
+##### 2A) Compare the calculated predicted sales, as obtained from the above model mlr1, to the actual sales as reported in the market.csv data file, by calculating the difference error squared (2pts)
+</span>
+
+```{r}
+sales_actual = 16876
+diff_error_squared = (sales_predicted - sales_actual) ^ 2
+diff_error_squared
+```
+
+
+<span style="color:red">
+##### 2B) Fill in the code chunk below to create multiple linear regression model for each of the specified two use cases, and display the summary statistics. Note that each model is assigned to a different variable for later referencing (4pts)
+</span>
+
+```{r}
+# mlr2 = Sales predicted by radio, tv, and pos
+mlr2 <- lm(sales ~ radio + tv + pos)
+
+# Display summary of multiple linear regression model mlr2
+summary(mlr2)
+
+# mlr3 = Sales predicted by radio, tv, pos, and paper
+mlr3 <- lm(sales ~ radio + tv + pos + paper)
+
+# Display summary of multiple linear regression model mlr3
+summary(mlr3)
+
+```
+
+<span style="color:red">
+##### 2C) Write down, on separate lines, the mathematical representation for the three regression models `mlr1, mlr2, and mlr3` .  For each case note the corresponding values for R-squared and Adjusted R-squared (3pts)
+</span>
+
+<span style="color:blue">
+mlr1: `y = 275.69xRadio + 48.34xTV - 17150.46`<br>
+R-squared = `0.9577`<br>
+Adj. R-squared = `0.9527`
+
+<span style="color:blue">
+mlr2: `y = 291.36xRadio + 38.26xTV - 107.62xPOS - 15491.23`<br>
+R-squared = `0.9585`<br>
+Adj. R-squared = `0.9508`
+
+<span style="color:blue">
+mlr3: `y = 294.224xRadio + 33.369xTV - 128.875xPOS - 9.159xPaper - 13801.015`<br>
+R-squared = `0.9612`<br>
+Adj. R-squared = `0.9509`
+</span>
+
+<span style="color:red">
+##### 2D) Based solely on the values of R-squared and Adjusted R-squared, which of the three multiple linear regression models mlr1, mlr2, mlr3, is best in predicting sales, and which is best in fitting sales. Explain your reasonning (2pts)
+</span>
+
+<span style="color:blue">
+Model `mlr3` would be the best at fitting sales as it has the highest R-squared value, but model `mlr1` would be the best in predicting sales as it has the highest adjusted R-squared value. Adjusted R-squared values considers the number of variables to differentiate between random and consistent behavior within the variables.
+</span>
+
+<span style="color:red">
+##### 2E) Calculate the predicted sales value for each of the above three models for `Radio = 69` , `TV = 255` , `POS = 1.5`, and `Paper = 75`. For each case calculate the error squared.  Which model is best at fitting the actual sales value? Compare your answer to your findings from 2D) (3pts)
+</span>
+
+```{r}
+# Calculate predicted sales value using 'mlr1'
+sales_predicted = coef(mlr1)[1] + coef(mlr1)[2]*(69) + coef(mlr1)[3]*(255)
+sales_predicted
+
+# Calculate error squared for 'mlr1'
+sales_actual = 13965
+diff_error_squared = (sales_predicted - sales_actual) ^ 2
+diff_error_squared
+
+# Calculate predicted sales value using 'mlr2'
+sales_predicted = coef(mlr2)[1] + coef(mlr2)[2]*(69) + coef(mlr2)[3]*(255) + coef(mlr2)[4]*(1.5)
+sales_predicted
+
+# Calculate error squared for 'mlr1'
+diff_error_squared = (sales_predicted - sales_actual) ^ 2
+diff_error_squared
+
+# Calculate predicted sales value using 'mlr3'
+sales_predicted = coef(mlr3)[1] + coef(mlr3)[2]*(69) + coef(mlr3)[3]*(255) + coef(mlr3)[4]*(1.5) + coef(mlr3)[5]*(75)
+sales_predicted
+
+# Calculate error squared for 'mlr3'
+diff_error_squared = (sales_predicted - sales_actual) ^ 2
+diff_error_squared
+```
+
+<span style="color:blue">
+Model `mlr3` had the closest predicted sales value of `14129.32` to the actual sales value of `13965`. It also had the least difference error squared value of `27002.18`, which would also make it both the best fitting and predicting model.
+</span>
+
+### Extra Credit: 3-D Scatter Plot (total 2pts)
+
+The following question is optional and counts as 2 extra credit points.  An attempt to execute `plot(radio,tv,sales)` or `scatter.smooth(radio,tv,sales)` will result in an error. For this you need to use a 3-D scatter plot. You start by loading a new package `scatterplot3d`,  a powerful tool to display data in 3-D. Once the package is loaded  you can look at the Help menu for documentation on how to use. Example of loading a package was demonstrated in the previous lab06. A modified  version is also included in this lab.
+
+<span style="color:red">
+##### 2E') Create a 3-D scatter plot representing sales, tv, and radio.  Label axis properly.  For a better display of numbers you may need to scale down the sales value  by 100 (2pts)
+</span>
+
+```{r}
+# Install 'scatterplot3d' package
+if(!require("scatterplot3d",quietly = TRUE))
+  install.packages("scatterplot3d",dependencies = TRUE, repos = "https://cloud.r-project.org")
+library("scatterplot3d")
+
+# Create 3D scatter plot of Sales vs. TV vs. Radio
+plot3d = scatterplot3d(radio, sales, tv,
+                       xlab = 'Radio Commercials (in $1000s)',
+                       ylab = 'Sales (in $1000s)',
+                       zlab = 'TV Commercials (in $1000s)',
+                       color = 'blue')
+```

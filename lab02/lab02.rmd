@@ -1,0 +1,387 @@
+---
+title: "Basic Operations in R/RStudio & Sentiment Analysis (lab02)"
+author: "Brian Nguyen"
+date: "1/28/2021"
+output:
+  html_document: default
+  html_notebook: default
+subtitle: BSAD343H, Business Analytics Honors, Spring 2021
+---
+
+### About
+
+R is a language and a tool for statistical computing and graphics. R provides a wide variety of statistical (linear and nonlinear modelling, classical statistical tests, time-series analysis, classification, clustering, etc) and graphical techniques, and is highly extensible. This notebook is a short tutorial on how to execute some basic commands in R.
+
+
+### Note
+
+Read carefully the instructions on Sakai. For clarity, questions are highlighted in red color and numbered according to their particular placement in the task section.  Quite often you may need to add your own code chunk.
+
+Execute all code chunks, save your work, preview, and submit your final $\it lab02.nb.html$ file in Sakai.
+
+
+## Variable assignment
+We assign values to variables using the assignment operator '='. Another form of assignment, more general, is the '<-' operator. 
+A variable allows you to store values or an object (e.g. a function).
+
+```{r}
+x = 128
+y = 16
+z = x + y 
+vars = c(2,4,8,16,32) # Creates a vector list using the generic combine function 'c' 
+
+```
+
+
+```{r}
+x # display value of variable x
+z # displays value of variable z
+```
+
+```{r}
+vars[1] #This calls the first value in the vector vars
+```
+
+```{r}
+vars[2] #This calls the second value in the vector vars
+```
+
+```{r}
+vars[1:3] #This calls the first through third values in the vector vars
+```
+
+```{r}
+vars #This calls the vector list
+```
+
+## Common Arithmetic Operations
+Below shows some simple arithmetic operations.
+```{r}
+12*6
+128/16
+9^2
+```
+
+## Basic Data Types
+R works with numerous data types. Some of the most basic types are: numeric,integers, logical (Boolean-`TRUE/FALSE`) and characters (string-`"TEXT"`).
+
+```{r}
+#Type: Character                   
+#Example:"TRUE",'23.4'
+
+v = "TRUE"                       
+class(v)                           
+
+#Type: Numeric                
+#Example: 12.3,5
+
+v = 23.5                  
+class(v)                   
+              
+#Type: Logical    
+#Example: TRUE,FALSE
+
+v = TRUE
+class(v)
+
+#Type: Factor (nominal, categorical)
+#Example: m f m f m
+
+v = as.factor(c("m", "f", "m"))
+class(v)
+```
+
+##  Functions
+
+R Functions are invoked by its name, followed by the parenthesis, and zero or more arguments. 
+```{r}
+# The following applies the function 'c' (seen earlier) to combine three numeric values into a vector 
+c(1,2,3)
+
+# Example of function mean() to calculate the mean of three values
+mean(c(5,6,7))
+
+# Square root of a number
+sqrt(99)
+```
+
+## Importing Data and Variable Assignment
+
+```{r}
+# Read a file of type csv (comma separated values) typical of many Excel files
+# Save results in named variables
+il_income = read.csv(file = "il_income.csv")
+top_il_income = read.csv(file = "top_il_income.csv")
+```
+
+
+## Arithmetic Operations with Data
+
+We can extract values from the dataset to perform calculations.
+```{r}
+# Extract the 1st value of column per_capita_income from dataset top_il_income 
+# Save result in variable DuPage, as in Dupage county
+DuPage = top_il_income$per_capita_income[1]
+# Extract 2nd value and save result in variable Lake, as in Lake county
+Lake = top_il_income$per_capita_income[2]
+# Calculate the difference between the two variables
+DuPage-Lake
+# Calculate the sum of the two variables
+DuPage+Lake
+#Calculate the average of the two variables
+(DuPage+Lake)/2
+```
+
+<span style="color:red">
+##### 1) Insert a new code chunk to repeat the above arithmetic operations for McHenry and Sangamon counties (4pts)
+</span>
+
+```{r}
+# McHenry county's 'per_capita_income'
+McHenry = top_il_income$per_capita_income[3]
+
+# Sangamon county's 'per_capita_income'
+Sangamon = top_il_income$per_capita_income[10]
+
+# Calculate the difference between the two variables
+McHenry - Sangamon
+
+# Calculate the sum of the two variables
+McHenry + Sangamon
+
+# Calculate the average of the two variables
+(McHenry + Sangamon) / 2
+```
+
+
+## Basic Statistics
+
+```{r,eval=TRUE}
+# Calculate mean of all values in column per_capita_income from dataset il_income
+mean(il_income$per_capita_income)
+# Calculate median
+median(il_income$per_capita_income)
+# Calculate quantiles
+quantile(il_income$per_capita_income)
+# Calculate summary statistics
+summary(il_income)
+```
+
+<span style="color:red">
+##### 2) Insert a new code chunk to repeat  the above basic statistics using instead the dataset from the file top_il_income (4pts)
+</span>
+
+```{r}
+# Calculate mean of all values in column 'per_capita_income' from dataset 'top_il_income'
+mean(top_il_income$per_capita_income)
+
+# Calculate median
+median(top_il_income$per_capita_income)
+
+# Calculate quantiles
+quantile(top_il_income$per_capita_income)
+
+# Calculate summary statistics
+summary(top_il_income)
+```
+
+
+# Vectors
+
+## Defining a Vector
+
+A sequence of data elements of the same basic type is defined as a vector.
+```{r,eval=TRUE}
+# vector of numeric values
+c(2, 3, 5, 8)
+
+# vector of logical values.
+c(TRUE, FALSE, TRUE)
+
+# vector of character strings.
+c("A", "B", "B-", "C", "D")
+```
+
+# Lists
+
+## Defining a List
+
+Lists, as opposed to vectors, can hold components of different types.
+
+```{r,eval=TRUE}
+scores = c(80, 75, 55)  # vector of numeric values                   
+grades = c("B", "C", "D-")  # vector of character strings.          
+
+office_hours = c(TRUE, FALSE, FALSE) # vector of logical values.
+student = list(scores,grades,office_hours) # list of vectors
+student
+```
+
+## List Slicing 
+
+We can retrieve components of the list with the single square bracket `[]` operator.
+
+```{r,eval=TRUE}
+student[1]     
+student[2]
+student[3]
+
+# first two components of the list
+student[1:2]
+```
+
+## Member Reference
+
+Using the double square bracket `[[]]` operator we can reference a member of the list directly. Using one bracket [] would still reference the list but will not allow you to extract a particular member of the list.
+
+```{r}
+student[[1]] # Components of the Scores Vector
+```
+
+*First element of the Scores vector*
+
+```{r}
+student[[1]][1]
+```
+
+
+*First three elements of the Scores vector*
+
+```{r}
+student[[1]][1:3]
+```
+
+<span style="color:red">
+##### 3) Insert a new code chunk to extract instead the second element of the grades vector (2pts)
+</span>
+
+```{r}
+# Display second element of 'grades' vector in 'student' list
+student[[2]][2]
+```
+
+
+## Named List Members
+
+It's possible to assign names to list members and reference them by names instead of by numeric indexes.
+
+```{r}
+student = list(myscores = scores, mygrades = grades , myoffice_hours = office_hours) 
+
+student
+student$myscores
+student$mygrades
+student$myoffice_hours
+```
+
+# Matrices
+
+All columns in a matrix must have the same data type and the same length.
+
+*Create a numeric matrix of 5 rows and 4 columns made of sequential numbers 1:20*
+```{r}
+x_mat = matrix(1:20, nrow=5, ncol=4)
+x_mat
+```
+
+*Retrieve value corresponding to 1st row and 3rd column*
+```{r}
+x_mat[1,3]
+```
+*Retrieve the 4th column of matrix*
+```{r}
+x_mat[,4]
+```
+
+
+*Retrieve the 3rd row of matrix*
+```{r}
+x_mat[3,]
+```
+
+*Retrieve rows 2,3,4 of columns 1,2,3*
+```{r}
+x_mat[2:4,1:3]
+```
+
+<span style="color:red">
+##### 4) Insert a new code chunk to extract the value corresponding to the 3rd row and 3rd column of the matrix (2pts)
+</span>
+
+```{r}
+# Retrieve value in row 3, column 3 from 'x_mat'
+x_mat[3, 3]
+```
+
+
+
+# Data Frames
+
+A data frame is more general than a matrix, in that different columns can have different data types (numeric, character, logic, factor). It is a powerful way to work with mixed data structures.
+
+## Defining a Data Frame
+
+When we need to store data in table form, we use data frames, which are created by combining lists of vectors of equal length. The variables of a data set are the columns and the observations are the rows. 
+
+
+The `str()` function helps us to display the internal structure of any R data structure or object to make sure that it's correct.
+
+
+```{r}
+str(il_income)
+```
+
+## Creating a Data Frame
+
+Snapshot of the solar system.
+
+```{r}
+name = c("Earth", "Mars", "Jupiter")
+type = c("Terrestrial","Terrestrial", "Gas giant")
+diameter = c(1, 0.532, 11.209)
+rotation = c(1, 1.03, 0.41)
+rings = c(FALSE, FALSE, TRUE)
+```
+
+Now, by combining the vectors of equal size, we can create a data frame object composed of mixed data types.
+
+```{r}
+planets_df = data.frame(name,type,diameter,rotation,rings)
+planets_df
+```
+
+## Sentiment Analysis
+
+This is an extra section for the honored class.  The purpose is to introduce you to some text sentiment analysis, and interpretation of results. Sentiment analysis is based on a scoring model where words are associated with positive or negative sentiments, and are allocated a weight factor. Most text analysis rely on developed software packages to process natural language, known as NLP (Natural Language Processing).  Many variations of NLP packages are freely available on-line. A popular one is published by Stanford University.  Others are proprietary.  In our example we will use the Google online NLP API (Application Programming Interface) to conduct a sentiment analysis. 
+
+<span style="color:red">
+Select a small text article (~ 20 lines) from an online source of your choice and a topic of your interest. Use the Google Cloud NLP API demo found at https://cloud.google.com/natural-language/#natural-language-api-demo/  to enter your text, and run ``ANALYZE``. Write a small paragraph summarizing your interpretation of the goodness of results as shown in the ``Sentiment`` tab for the entire document. Skip the entity level sentiment. In your interpretation explain what $score$ and $magnitude$ represent (8pts)
+</span>
+
+<span style="color:blue">
+For the NLP API analysis, I chose an article discussing reality television network ABC's "the Bachelor" and recent rumors that a contestant on the show was an escort. The article was split into significant sections and lines that vary in the API's $score$ and $magnitude$ values. My interpretation of $score$ is that it represents the relative negativity/positively in emotions fueling the segment, while $magnitude$ represents the strength or emphasis of which the segment is being communicated with. 
+</span>
+
+<span style="color:blue">
+In the article I chose, there were very clearly distinctions between statements saturated with negative and positive emotions, with neutral statements also being identified. I thought the API was rather effective in its analysis, as statements addressing strong feelings in either direction received a stronger relative $score$ and $magnitude$. I also think the overall $score$ was reflective of the author's perspective, as this was an article written from a neutral standpoint using quotes saturated with mostly negative emotions. The API was still able to distinguish this aspect and calculated an overall $score$ of ``-0.1`` and $magnitude$ of ``10.3``.
+</span>
+
+<span style="color:blue">
+Article source: https://www.cosmopolitan.com/entertainment/celebs/a35347830/brittany-galvin-instagram-statement-bachelor-escort-rumors/
+</span>
+
+# Suggested Exercises & Resources
+
+## Exercises
+
+* Datacamp - Learn Data Science from your browser: 
+https://www.datacamp.com/courses/free-introduction-to-r
+
+* R-tutor - An R intro to stats that explains basic R concepts:
+http://www.r-tutor.com/r-introduction
+
+## Data Sources
+Data samples used in this worksheet were downloaded from the U.S. Census Bureau American FactFinder site.
+
+* "SELECTED ECONOMIC CHARACTERISTICS 2006-2010 American Community Survey 5-Year Estimates" - U.S. Census Bureau. Retrieved 2016-09-09:
+https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml

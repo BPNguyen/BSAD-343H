@@ -1,0 +1,282 @@
+---
+title: "Non-Linear Regression & Linear Programming (lab08)"
+author: "Brian Nguyen"
+date: "3/28/2021"
+output:
+  html_notebook: default
+  html_document: default
+subtitle: BSAD 343H, Business Analytics, Spring 2021
+---
+
+### About
+
+In this lab, we will look at non-linear regression modeling, and linear programming. Linear regression modeling, as discussed in the previous lab, works with simple and multiple regression models. Sometimes the relationships are not best represented by linear models, and a non-linear regression modeling is required. The general concept remains the same; minimizing the error between the observed/actual values and the values predicted/fitted by the model. Linear programming on the other hands seeks to find the optimal solution to a problem with multi-variables and multi-constraints described by linear relationships, as opposed to non-linear relationships. The latter would be a non-linear programming, a case not covered in this class.
+
+First part of the lab, we will conduct a non-linear regression modeling on the cost of servers, as presented in class.  In the second part we will setup a linear programming model to solve the marketing use case discussed in class.
+
+### Note
+
+Read carefully the instructions on Sakai. For clarity, questions are highlighted in red color and numbered according to their particular placement in the task section. Quite often you may need to add your own code chunk.
+
+Execute all code chunks, save your work, preview, and submit your final $\it lab08.nb.html$ file in Sakai.
+
+--------------
+
+
+### Task 1: Non-Linear Regression Modeling
+
+First, we must read the file 'serverscost.csv' into R, and extract the two columns of interest. 
+
+```{r}
+mydata <- read.csv("serverscost.csv", header=TRUE)
+head(mydata)
+```
+
+```{r}
+servers = mydata$servers
+cost = mydata$cost
+```
+
+We start by creating a simple linear regression model. Next, we plot the points to visually inspect the data and unravel any potential relationships. 
+
+```{r}
+linear_model = lm(cost ~ servers)
+summary(linear_model)
+```
+
+```{r}
+# add linear line based on regression model
+plot(servers,cost, pch=16) # the pch option is to accentuate the points
+abline(linear_model, col="blue", lwd=2)
+```
+
+The blue line here represents the model based predicted data,  and the black dots are the actual data points. Clearly, from the qualitative visual inspection and the quantitative $R^2$ and $AdjustedR^2$ the linear model is far from being a good fit or predictor. Next we will use a nonlinear quadratic model to see how the model can be improved.
+
+A linear model is of the form $y$ ~ $x_0 + x_1 +....x_n$ where $y$ is the dependent variable and the $x_n$ are the independent variables. For the non-linear quadratic regression model we are looking for an equation of the form $y$ ~ $x + x^2$
+
+```{r}
+# First it is best to define a new variable which is the squared value of servers
+servers2 = servers^2
+
+# The model formula is based on the form y = x + x^2
+quad_model = lm(cost ~ servers + servers2)
+summary(quad_model)
+```
+From the summary, we see the R-squared value has increased dramatically from the linear model, indicating a big improvement. That is not the only value we must check though. Let's inspect visually how the model based data compare to the actual data.
+
+First, we must calculate the predicted/fitted values. Then, we can plot the predicted points next to the actual values.
+```{r}
+# Compute the predicted values based on the quad model using the R-function predict()
+predicted2 = predict(quad_model,data=mydata)
+
+# Plot cost versus servers based on actual values using a striked symbol
+plot(servers,cost, pch=16) 
+
+# The par (parameter setting) command is needed to overlay the predicted model based values without the labels and annotations
+par(new=TRUE, xaxt="n", yaxt="n", ann=FALSE) 
+
+# Use the red color for the quadratic model
+plot(predicted2, col="red", pch=16) 
+```
+
+It is easy to observe now that the predicted values are more in line with the observed values.
+
+A common misconception is that the higher order the non-linear model is, the better predictive it is. Remember from the previous lab and class sessions the need to distinguish between $R^2$ which is a measure of how good fitting the model is and $AdjustedR^2$ which is a measure of how good predicting the model is. Lets try a cubic model and see how it performs. The model takes now the form $y$ ~ $x + x^2 + x^3$. 
+
+<span style="color:red">
+##### 1A) Fill-in the code chunk below to derive a cubic non-linear regression model, and display the summary statistics (4pts)
+</span>
+
+```{r}
+#First define the additional a new additional variable, the cubic of servers, needed for your model
+servers3 = servers^3
+
+# The model formula is of the form x + x^2 + x^3.  For consistency best to call your new model cubic_model.
+cubic_model = lm(cost ~ servers + servers2 + servers3)
+summary(cubic_model)
+```
+
+We can next visually inspect the goodness of the quadratic model and the cubic model.
+
+<span style="color:red">
+##### 1B) Graph a plot of cost versus servers based on actual data. Overlay the predicted values based on the cubic model, and on the quadratic model. Follow the sequence of commands described in the code chunk below (3pts)
+</span>
+
+```{r}
+# compute the predicted values based on the cubic model. For consistency with the previous example best to call your model predicted3.
+predicted3 = predict(cubic_model, data = mydata)
+ 
+# Plot cost versus servers based on actual values
+plot(servers, cost,
+     pch = 16)
+ 
+# The par (parameter setting) command is needed to overlay the predicted model based values without the labels and annotations
+par(new = TRUE,
+    xaxt = 'n',
+    ann = FALSE)
+
+# Use the color `green`  to plot the predicted points for the cubic model
+plot(predicted2,
+     col = 'red',
+     pch = 16)
+
+# The par (parameter setting) command is needed again to overlay the predicted model based values without the labels and annotations
+par(new = TRUE,
+    xaxt = 'n',
+    ann = FALSE)
+
+# Use the color `red` to plot the predicted points for the quadratic model
+plot(predicted3,
+     col = 'blue',
+     pch = 16)
+```
+<span style="color:blue">
+NOTE: I changed the cubic and quadratic models' colors to red and blue because I am red/green colorblind.
+</span>
+
+From the graphs it should be hard to tell which of the two models, the quadratic or the cubic, is a better fit and predictor.
+A good way to quantify which model is best in predicting, is to look at the $AdjustedR^2$.
+
+<span style="color:red">
+##### 1C) List below the R2 and Adjusted R2 for all three models linear, quandratic, and cubic.  Identify which model is a better predictor and which model is a better fit. Explain your logic (3pts)
+</span>
+
+<span style="color:blue">
+Linear:<br>
+R-squared = `0.001127`<br>
+Adj. R-squared = `-0.05437`
+
+<span style="color:blue">
+Quadratic:<br>
+R-squared = `0.9314`<br>
+Adj. R-squared = `0.9233`
+
+<span style="color:blue">
+Cubic:<br>
+R-squared = `0.932`<br>
+Adj. R-squared = `0.9193`
+
+<span style="color:blue">
+The quadratic model is the best predictor and the cubic model is the best fit of the three.
+</span>
+
+----------
+
+### Task 2: Linear Programming & Optimization
+
+For this task, we need to install an optimization package in R. 
+
+```{r}
+# Require will load the package only if not installed 
+# Dependencies = TRUE makes sure that dependencies are installed
+if(!require("lpSolveAPI",quietly = TRUE))
+  install.packages("lpSolveAPI",dependencies = TRUE, repos = "https://cloud.r-project.org")
+
+library("lpSolveAPI")
+```
+
+
+#### Solving Marketing Model
+
+We will solve for the marketing use case discussed in class. First create the linear programming model object in R.  This is the starting point.  An object is like a container and will eventually contain all the definitions for objective function, constraints and optimized results.
+
+```{r}
+# We start with `0` constraint and `2` decision variables. The object name `lpmark` is discretionary.
+lpmark <- make.lp(0, 2) 
+```
+
+Next we need to define the type of optimization,  set the objective function, and add the constraints to our model object.  This is done by using different commands applicable only to the created linear programming model object.
+
+```{r}
+# Define type of optimization as maximum and to avoid the unnecessary screen outputs in the worksheet dump the screen output into a variable called `dump`
+dump = lp.control(lpmark, sense="max")  
+# Set the objective function with the proper coefficients associated with the decision variables
+set.objfn(lpmark, c(275.691, 48.341))
+
+# add a constraint for the maximum allowed budget of $350K
+add.constraint(lpmark, c(1, 1), "<=", 350000) # constraint #1
+
+# Add constraint for minimum budget of $15k for radio discount
+add.constraint(lpmark, c(1, 0), '>=', 15000)
+
+# Add constraint for minimum budget of $75k for TV discount
+add.constraint(lpmark, c(0, 1), '>=', 75000)
+
+# Add constraint for every $1 spent on radio, then $2 on TV
+add.constraint(lpmark, c(2, -1), '=', 0)
+
+# Add constraint for positive number of radio
+add.constraint(lpmark, c(1, 0), '>=', 0)
+
+# Add constraint for positive number of TV
+add.constraint(lpmark, c(0, 1), '>=', 0)
+```
+
+<span style="color:red">
+##### 2A) Insert in the above code chunk the remaining five constraints corresponding to the marketing model. Follow the guidelines as described in the class PPT slides (6pts)
+</span>
+
+Finally we can explore, solve the model, and report results using additional commands part of the `lpSolveAPI` package and applicable only to our created `lpmark` linear programming object.
+
+```{r}
+# View the problem formulation in tabular/matrix form
+lpmark
+
+# Solve 
+solve(lpmark) 
+
+# Display the objective function optimum value
+get.objective(lpmark)
+
+# Display the decision variables optimum values
+get.variables(lpmark) 
+```
+
+<span style="color:red">
+##### 2B) Write down the optimum values for sales, radio, and tv ads. Show how the optimum solution satisfy all six constraints by substituting for the decision variables and numerically validating each case (4pts)
+</span>
+
+```{r}
+# Optimum sales
+opt_sales = 43443517
+opt_sales
+
+# Optimum radio commercials
+opt_radio = 116666.7
+opt_radio
+
+# Optimum TV ads
+opt_tv = 233333.3
+opt_tv
+
+# Case 1 validation
+if (opt_radio + opt_tv >= 350000) {
+  print('Case 1: TRUE')
+}
+
+# Case 2 validation
+if (opt_radio >= 15000) {
+  print('Case 2: TRUE')
+}
+
+# Case 3 validation
+if (opt_tv >= 75000) {
+  print('Case 3: TRUE')
+}
+
+# Case 4 validation
+case4 = (2 * opt_radio) - opt_tv
+if (case4 <= 0.11) {
+  print('Case 4: TRUE (disregarding rounding errors)')
+}
+
+# Case 5 validation
+if (opt_radio >= 0) {
+  print('Case 5: TRUE')
+}
+
+# Case 6 validation
+if (opt_tv >= 0) {
+  print('Case 6: TRUE')
+}
+```

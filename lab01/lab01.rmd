@@ -1,0 +1,107 @@
+---
+title: "Intro to Lab Protocol Using R/RStudio Notebook (lab01)"
+author: "Brian Nguyen"
+date: "1/21/2021"
+output:
+  html_notebook: default
+  html_document: default
+subtitle: BSAD343H, Business Analytics Honors, Spring 2021
+---
+
+###  About
+
+An R Notebook is an R Markdown document that allows for the integration of text, code, and images in one document. Code chunks can be executed within the document, with results appearing in same document immediately after the code. R Notebooks are a method of literate programming that allows for direct interaction with R while creating a reproducible document with publication-quality output. The output will be in 'HTML' format similar to what is used for document publication on the Web.
+
+Each assignment will be in the form of an R notebook, including directions, comments, and code chunk examples,  to help with the assignment and the questions.  
+
+The programming part using R/RStudio should be viewed as a tool to solve a problem, and learned as we go.  The purpose of this course is less on learning how to code,  and more on critical thinking and problem solving.  It is therefore important, prior to answering any questions or solving a problem, you  carefully read each document, follow the instructions, and sequentially execute any existing code chunks as part of the walk-thru examples.
+
+### Setup
+
+An R markdown file will be published in Sakai each week as part of the assignment. Students need to review the document, answer the questions, and submit the created HTML file in Sakai. This first assignment (lab01) is designed to introduce you to the process. You simply need to add your name and date in the header, and submit the corresponding HTML file.  Future lab assignments will be more involved. 
+
+Start by downloading the R markdown file, and any data set, from Sakai to your laptop. Once dowloaded the notebook file can be opened in R/RStudio by simply double-clicking the file assuming you have properly installed R/RStudio on your laptop. 
+
+A detailed walk-thru, with images, is provided in the user's  guide reference file `labref.pdf'. Make sure to read, and to keep handy for future references.
+
+
+### Header
+
+The header is the very first few lines of the file that give important information about the document. It is essential to edit this information by entering your name and date. 
+
+### Inserting Chunks of Code
+
+Notebook chunks can be inserted quickly using the keyboard shortcut Ctrl + Alt + I (OS X: Cmd + Option + I), or via the Insert command in the editor toolbar found at the top. Below is a an example of a code chunk. The output from the code chunk execution appears below the code.
+
+```{r}
+# This is a sample code chunk to add two numbers
+x = 5
+y = 2
+z = x+y
+z
+```
+
+A code chunk always begins with the \`\`\` symbol followed by the `{r}` and ending with the \`\`\`. You can insert code anywhere between the beginning and ending symbols.  You can have as many chunks of code as desired. Typically, in an R Notebook, it is customary to have one output per chunk of code. If there will be more than one output, it is best to split the code. 
+
+### Executing Code
+
+In order to run the code, you have several options.
+
+1. Use Ctrl + Shift + Enter (OS X: Cmd + Shift + Enter) or click the Run Chunk command represented by the green arrow, to run the current chunk.
+
+2. Press Ctrl + Enter (OS X: Cmd + Enter) to run just the current statement line. Running a single statement is much like running an entire chunk consisting only of one line statement.
+
+3. Use the Run All and Run All Chunks Above commands to run all chunks or a batch of chunks found above. 
+
+### Inserting Images
+
+At times throughout the lab sessions, you may be asked to add images to your notebook to show results obtained outside of R.
+Below is an example on how to add a picture to your notebook with a caption. Here, the image file 'bigdata.png' is located in the same directory or folder as the R markdown file 'lab01.Rmd'.
+
+![Big Data Landscape](bigdata.png) 
+
+### Answering Questions
+
+Questions, and corresponding grade points, are highlighted in the document in red color visible only in preview mode.  Example of a question is shown below.
+
+<span style="color:red">
+##### 1) This is a sample question (2pts)
+</span>
+
+To answer a question you will need to either type an explanation text, insert a code chunk, or insert an image, below each question marked in red. It is recommended, for clarity, to choose a different text color when typing a text explanation, like shown below.
+
+<span style="color:blue">
+This is a sample answer 
+</span>
+
+### Exercise Question
+
+<span style="color:red">
+##### 1) Insert below an image of your choice (5pts)
+</span>
+
+![Best Professor/Boss Ever](BestProfessorBossEver.jpeg) 
+
+### Submitting Your Work
+
+After completing and answering all questions in your R Notebook or R Markdown file, review your work to make sure you have safely executed all the code chunks in the notebook, and there are no errors or missed code chunks not executed. Otherwise results won't appear in your submitted file. Save your work and click  the "Preview" button or select the "Preview Notebook" from the dropdown.  A new pop-up window should appear displaying your work. Make sure the displayed window accurately represent your work, including all executed chunks outputs, and your answers to all questions.
+
+
+#### Note
+
+If this is the first time you run 'Preview', you will probably get a pop-up window asking you to install the required packages. Answer 'Yes'.
+
+
+Once the preview file is successfully rendered, it will create a new corresponding HTML document with a file name extension $\it nb.html$ or $\it html$. In this case the name should read  $\it lab01.nb.html$. The file resides in the same location, directory, or folder as the R markdown file. You will need to submit the HTML file $\it lab01.nb.html$ in Sakai as part of the weekly assignment. It is a simple process of uploading a file.
+
+### Overall Impact
+
+R Notebooks are powerful. They allow students to edit sections of the file and see the immediate changes in the output without having to run the entire code. Please refer to this guide and other shared references for more guidance.
+
+source: [http://rmarkdown.rstudio.com/r_notebooks.html](http://rmarkdown.rstudio.com/r_notebooks.html)
+
+ 
+This lab assignment is authored by Fady Harfoush of Loyola University Chicago
+
+
+
